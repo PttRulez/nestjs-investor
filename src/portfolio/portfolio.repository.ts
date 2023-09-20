@@ -2,7 +2,9 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { Portfolio } from './models/portfolio.model';
 import { PortfolioUpdate } from './interfaces/portfolio.interfaces';
 import { IPortfolioRepository } from './interfaces/portfolio.repository.interface';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class PortfolioRepository implements IPortfolioRepository {
   constructor(private prisma: PrismaService) {
     console.log('PortfolioRepository constructor: ', prisma);
