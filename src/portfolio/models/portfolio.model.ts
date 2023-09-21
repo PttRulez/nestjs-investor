@@ -8,7 +8,7 @@ export class Portfolio implements IPortfolio {
     private readonly _compound: boolean,
     private readonly _deals?: Array<string>, // потом создам модель Deal и это будет массив из таких моделей
   ) {
-    // массив сделок планирую получать из репозитария сделок по айдигник портфолио
+    // массив сделок планирую получать из репозитория сделок по айдишнику портфолио
   }
 
   get id() {
@@ -29,5 +29,13 @@ export class Portfolio implements IPortfolio {
 
   get deals() {
     return this._deals;
+  }
+
+  toJSON() {
+    return {
+      id: this.id,
+      name: this.name,
+      compound: this.compound,
+    };
   }
 }

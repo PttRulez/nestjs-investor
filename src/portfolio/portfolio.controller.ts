@@ -19,7 +19,7 @@ export class PortfolioController {
 
   @Post()
   create(@Body() dto: CreatePortfolioDto) {
-    return this.portfolioService.create(1, dto.name, dto.compound);
+    return this.portfolioService.create(this.userId, dto.name, dto.compound);
   }
 
   @Get()

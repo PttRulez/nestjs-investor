@@ -12,59 +12,59 @@ datasource db {
 
 // Может назвать все модели здесь типа PortfolioPrisma ??
 model PortfolioModel {
-  id       Int         @id @default(autoincrement())
+  id       Int     @id @default(autoincrement())
   name     String
-  compound Boolean     @default(false)
-  user     UserModel   @relation(fields: [userId], references: [id])
+  compound Boolean @default(false)
+  // user     UserModel   @relation(fields: [userId], references: [id])
   userId   Int
-  deals    DealModel[]
+  // deals    DealModel[]
 
   @@map("portfolios")
 }
 
-model DepositModel {
-  id     Int      @id @default(autoincrement())
-  amount Int
-  date   DateTime @db.Date
+// model DepositModel {
+//   id     Int      @id @default(autoincrement())
+//   amount Int
+//   date   DateTime @db.Date
 
-  @@map("deposits")
-}
+//   @@map("deposits")
+// }
 
-model CashoutModel {
-  id     Int      @id @default(autoincrement())
-  amount Int
-  date   DateTime @db.Date
+// model CashoutModel {
+//   id     Int      @id @default(autoincrement())
+//   amount Int
+//   date   DateTime @db.Date
 
-  @@map("cashouts")
-}
+//   @@map("cashouts")
+// }
 
-model DealModel {
-  id           Int            @id @default(autoincrement())
-  ticker       String
-  exchangeName String
-  stockType    String
-  amount       Int
-  price        Decimal
-  board        String
-  date         DateTime
-  portfolio    PortfolioModel @relation(fields: [portfolioId], references: [id])
-  portfolioId  Int
+// model DealModel {
+//   id           Int            @id @default(autoincrement())
+//   ticker       String
+//   exchangeName String
+//   stockType    String
+//   amount       Int
+//   price        Decimal
+//   board        String
+//   date         DateTime
+//   portfolio    PortfolioModel @relation(fields: [portfolioId], references: [id])
+//   portfolioId  Int
 
-  @@map("deals")
-}
+//   @@map("deals")
+// }
 
-model UserModel {
-  id             Int              @id @default(autoincrement())
-  email          String
-  password       String
-  name           String
-  role           Role             @default(INVESTOR)
-  PortfolioModel PortfolioModel[]
+// model UserModel {
+//   id             Int              @id @default(autoincrement())
+//   email          String
+//   password       String
+//   name           String
+//   role           Role             @default(INVESTOR)
+//   PortfolioModel PortfolioModel[]
 
-  @@map("users")
-}
+//   @@map("users")
+// }
 
-enum Role {
-  ADMIN
-  INVESTOR
-}
+// enum Role {
+//   ADMIN
+//   INVESTOR
+// }
