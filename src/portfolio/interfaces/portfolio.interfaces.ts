@@ -1,11 +1,5 @@
-export interface IPortfolio {
-  id: number;
-  name: string;
-  compound: boolean;
-  userId: number;
-  deals?: Array<string>;
-}
+import { Portfolio } from '../models/portfolio.model';
 
-export type PortfolioUpdate = Partial<Omit<IPortfolio, 'deals'>> & {
+export type PortfolioUpdate = Partial<Portfolio> & {
   id: number;
 };

@@ -1,16 +1,11 @@
 import { Portfolio } from './models/portfolio.model';
 import { PortfolioUpdate } from './interfaces/portfolio.interfaces';
-import { IPortfolioRepository } from './interfaces/portfolio.repository.interface';
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { ConfigService } from '@nestjs/config';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
-export class PortfolioRepository implements IPortfolioRepository {
-  private prisma: PrismaService;
-  constructor(private configService: ConfigService) {
-    this.prisma = new PrismaService(this.configService);
-  }
+export class PortfolioRepository {
+  constructor(private prisma: PrismaService) {}
 
   async create(
     userId: number,
@@ -25,12 +20,7 @@ export class PortfolioRepository implements IPortfolioRepository {
       },
     });
 
-    return new Portfolio(
-      newPortfolio.id,
-      newPortfolio.userId,
-      newPortfolio.name,
-      newPortfolio.compound,
-    );
+    return new Portfolio(newPortfolio);
   }
 
   async getAll(userId: number): Promise<Portfolio[]> {
@@ -40,9 +30,7 @@ export class PortfolioRepository implements IPortfolioRepository {
       },
     });
 
-    return bdPortfolios.map(
-      (p) => new Portfolio(p.id, p.userId, p.name, p.compound),
-    );
+    return bdPortfolios.map((p) => new Portfolio(p));
   }
 
   async findOne(portfolioId: number): Promise<Portfolio | null> {
@@ -52,12 +40,7 @@ export class PortfolioRepository implements IPortfolioRepository {
     if (!foundPortfolio) {
       return null;
     }
-    return new Portfolio(
-      foundPortfolio.id,
-      foundPortfolio.userId,
-      foundPortfolio.name,
-      foundPortfolio.compound,
-    );
+    return new Portfolio(foundPortfolio);
   }
 
   async update(data: PortfolioUpdate): Promise<Portfolio | null> {
@@ -71,12 +54,7 @@ export class PortfolioRepository implements IPortfolioRepository {
     if (!updatedPortfolio) {
       return null;
     }
-    return new Portfolio(
-      updatedPortfolio.id,
-      updatedPortfolio.userId,
-      updatedPortfolio.name,
-      updatedPortfolio.compound,
-    );
+    return new Portfolio(updatedPortfolio);
   }
 
   async remove(portfolioId: number): Promise<boolean> {
