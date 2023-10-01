@@ -1,5 +1,5 @@
-import { Portfolio } from './models/portfolio.model';
-import { PortfolioUpdate } from './interfaces/portfolio.interfaces';
+import { Portfolio } from './portfolio.model';
+import { PortfolioData, UpdatePortfolioData } from './types';
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -7,35 +7,40 @@ import { PrismaService } from '../prisma/prisma.service';
 export class PortfolioRepository {
   constructor(private prisma: PrismaService) {}
 
-  async create(
-    userId: number,
-    name: string,
-    compound: boolean,
-  ): Promise<Portfolio> {
-    const newPortfolio = await this.prisma.portfolioModel.create({
-      data: {
-        userId,
-        name,
-        compound,
+  async create(portfolioData: PortfolioData): Promise<Portfolio> {
+    const newPortfolio = await this.prisma.portfolio.create({
+      data: { ...portfolioData },
+      include: {
+        deposits: true,
+        cashouts: true,
       },
     });
 
     return new Portfolio(newPortfolio);
   }
 
-  async getAll(userId: number): Promise<Portfolio[]> {
-    const bdPortfolios = await this.prisma.portfolioModel.findMany({
+  async getAllUserPortfolios(userId: number): Promise<Portfolio[]> {
+    const dbPortfolios = await this.prisma.portfolio.findMany({
       where: {
         userId,
       },
+      include: {
+        deposits: true,
+        cashouts: true,
+        deals: true,
+      },
     });
 
-    return bdPortfolios.map((p) => new Portfolio(p));
+    return dbPortfolios.map((p) => new Portfolio(p));
   }
 
   async findOne(portfolioId: number): Promise<Portfolio | null> {
-    const foundPortfolio = await this.prisma.portfolioModel.findUnique({
+    const foundPortfolio = await this.prisma.portfolio.findUnique({
       where: { id: portfolioId },
+      include: {
+        deposits: true,
+        cashouts: true,
+      },
     });
     if (!foundPortfolio) {
       return null;
@@ -43,30 +48,33 @@ export class PortfolioRepository {
     return new Portfolio(foundPortfolio);
   }
 
-  async update(data: PortfolioUpdate): Promise<Portfolio | null> {
-    const updatedPortfolio = await this.prisma.portfolioModel.update({
-      where: { id: data.id },
+  async update(portfolioData: UpdatePortfolioData): Promise<Portfolio> {
+    const { id, ...withoudId } = portfolioData;
+    const updatedPortfolio = await this.prisma.portfolio.update({
+      where: { id },
       data: {
-        ...data,
+        ...withoudId,
+      },
+      include: {
+        deposits: true,
+        cashouts: true,
       },
     });
 
-    if (!updatedPortfolio) {
-      return null;
-    }
     return new Portfolio(updatedPortfolio);
   }
 
-  async remove(portfolioId: number): Promise<boolean> {
-    const deleted = await this.prisma.portfolioModel.delete({
+  async remove(portfolioId: number): Promise<Portfolio> {
+    const deleted = await this.prisma.portfolio.delete({
       where: {
         id: portfolioId,
       },
+      include: {
+        deposits: true,
+        cashouts: true,
+      },
     });
 
-    if (!deleted) {
-      return false;
-    }
-    return true;
+    return new Portfolio(deleted);
   }
 }
