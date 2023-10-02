@@ -41,4 +41,14 @@ export class CashoutRepository {
 
     return new Cashout(newCashout);
   }
+
+  async deleteById(cashoutId: number): Promise<Cashout> {
+    const deleted = await this.prisma.cashout.delete({
+      where: {
+        id: cashoutId,
+      },
+    });
+
+    return new Cashout(deleted);
+  }
 }

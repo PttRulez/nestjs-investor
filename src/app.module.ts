@@ -11,6 +11,7 @@ import { DepositModule } from './deposit/deposit.module';
 import { CashoutModule } from './cashout/cashout.module';
 import { DealModule } from './deal/deal.module';
 import { MoexModule } from './moex/moex.module';
+import { GlobalHttpModule as HttpModule } from './http/http.module';
 
 const reflector = new Reflector();
 
@@ -20,6 +21,7 @@ const reflector = new Reflector();
     CashoutModule,
     ConfigModule.forRoot({ isGlobal: true }),
     DepositModule,
+    HttpModule,
     PortfolioModule,
     PrismaModule,
     UserModule,

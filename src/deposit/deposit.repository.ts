@@ -41,4 +41,14 @@ export class DepositRepository {
 
     return new Deposit(newDeposit);
   }
+
+  async deleteById(depositId: number): Promise<Deposit> {
+    const deleted = await this.prisma.deposit.delete({
+      where: {
+        id: depositId,
+      },
+    });
+
+    return new Deposit(deleted);
+  }
 }

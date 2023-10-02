@@ -69,10 +69,6 @@ export class PortfolioRepository {
       where: {
         id: portfolioId,
       },
-      include: {
-        deposits: true,
-        cashouts: true,
-      },
     });
 
     return new Portfolio(deleted);
