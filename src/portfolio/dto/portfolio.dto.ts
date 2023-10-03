@@ -1,4 +1,5 @@
 import { IsBoolean, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { PartialType } from '@nestjs/mapped-types';
 
 export class CreatePortfolioDto {
   @IsString()
@@ -7,8 +8,9 @@ export class CreatePortfolioDto {
 
   @IsBoolean()
   compound: boolean;
+}
 
+export class UpdatePortfolioDto extends PartialType(CreatePortfolioDto) {
   @IsNumber()
-  @IsNotEmpty()
-  userId: number;
+  id: number;
 }

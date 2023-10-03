@@ -1,29 +1,56 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { PortfolioRepository } from './portfolio.repository';
-import { Portfolio } from './models/portfolio.model';
-import { PortfolioUpdate } from './interfaces/portfolio.interfaces';
+import { Portfolio } from './portfolio.model';
+import { UpdatePortfolioData } from './types';
 
 @Injectable()
 export class PortfolioService {
   constructor(private portfolioRepository: PortfolioRepository) {}
 
   create(userId: number, name: string, compound: boolean): Promise<Portfolio> {
-    return this.portfolioRepository.create(userId, name, compound);
+    return this.portfolioRepository.create({ userId, name, compound });
   }
 
-  findAll(userId: number) {
-    return this.portfolioRepository.getAll(userId);
+  getAllUserPortfolios(userId: number): Promise<Portfolio[]> {
+    return this.portfolioRepository.getAllUserPortfolios(userId);
   }
 
-  findOne(portfolioId: number) {
-    return this.portfolioRepository.findOne(portfolioId);
+  async getOneById(userId: number, portfolioId: number): Promise<Portfolio> {
+    const portfolio = await this.portfolioRepository.findOne(portfolioId);
+    if (!portfolio)
+      throw new NotFoundException("Portfolio with this id doesn't exist");
+
+    if (!portfolio.belongsToUser(userId))
+      throw new UnauthorizedException('Not your portfolio :(');
+
+    return portfolio;
   }
 
-  update(data: PortfolioUpdate) {
-    return this.portfolioRepository.update(data);
+  async update(currentUserId: number, portfolioData: UpdatePortfolioData) {
+    const foundPortfolio = await this.portfolioRepository.findOne(
+      portfolioData.id,
+    );
+    if (!foundPortfolio)
+      throw new NotFoundException("Portfolio with this id doesn't exist");
+
+    if (!foundPortfolio.belongsToUser(currentUserId))
+      throw new UnauthorizedException('Not your portfolio :(');
+
+    return this.portfolioRepository.update(portfolioData);
   }
 
-  remove(portfolioId: number) {
+  async remove(currentUserId: number, portfolioId: number) {
+    const foundPortfolio = await this.portfolioRepository.findOne(portfolioId);
+    if (!foundPortfolio)
+      throw new NotFoundException("Portfolio with this id doesn't exist");
+
+    if (!foundPortfolio.belongsToUser(currentUserId))
+      throw new UnauthorizedException('Not your portfolio :(');
+
     return this.portfolioRepository.remove(portfolioId);
   }
 }
