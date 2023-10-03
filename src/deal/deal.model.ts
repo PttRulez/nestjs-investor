@@ -1,4 +1,4 @@
-import { Deal as PrismaDeal, DealType, StockType } from '@prisma/client';
+import { Deal as PrismaDeal, DealType } from '@prisma/client';
 import { Portfolio } from 'src/portfolio/portfolio.model';
 import { DealWithRelations } from './types';
 import { Exchange } from 'src/common/enums';
@@ -6,7 +6,6 @@ import { Exchange } from 'src/common/enums';
 export class Deal {
   id: number;
   securityId: number;
-  stockType: StockType;
   exchange: Exchange;
   amount: number;
   price: number;
@@ -34,7 +33,6 @@ export class Deal {
     const json: Record<string, any> = {
       id: this.id,
       securityId: this.securityId,
-      stockType: this.stockType,
       amount: this.amount,
       price: this.price,
       type: this.type,

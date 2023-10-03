@@ -1,20 +1,31 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { MoexCreatSecuritydata } from './types';
+import { MoexSecurity } from './moexsecurity.model';
 
 @Injectable()
 export class MoexRepository {
   constructor(private prisma: PrismaService) {}
 
-  async create() {}
+  async create(securityData: MoexCreatSecuritydata): Promise<MoexSecurity> {
+    const dbSecurity = await this.prisma.moexSecurity.create({
+      data: securityData,
+    });
 
-  async findByTicker(ticker: string) {
-    const foundSec = await this.prisma.moexSecurities.findUnique({
+    return new MoexSecurity(dbSecurity);
+  }
+
+  async findByTicker(ticker: string): Promise<MoexSecurity | null> {
+    const foundSec = await this.prisma.moexSecurity.findUnique({
       where: {
         ticker,
       },
     });
 
-    console.log('foundSec', foundSec);
-    return foundSec;
+    if (!foundSec) {
+      return null;
+    }
+
+    return new MoexSecurity(foundSec);
   }
 }

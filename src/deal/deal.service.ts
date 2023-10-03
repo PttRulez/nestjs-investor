@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ImATeapotException, Injectable } from '@nestjs/common';
 import { DealRepository } from './deal.repository';
 import { CreateDealData } from './types';
 import { Exchange } from 'src/common/enums';
@@ -19,15 +19,43 @@ export class DealService {
     dealData: Omit<CreateDealData, 'securityId'>,
   ) {
     // check by exchange property from which table u get security
-    const security = await this.moexRepository.findByTicker(ticker);
+    // for now it's always moex
+    // get the security model
+    let security = await this.moexRepository.findByTicker(ticker);
 
     if (!security) {
-      const a = this.moexApi.getSecurityByTicker(ticker);
-      console.log('aaa', a);
+      const dataFromMoex = await this.moexApi.getSecurityByTicker(ticker);
+      const name = dataFromMoex.description.data.find(
+        (arr) => arr[0] === 'NAME',
+      )?.[2];
+      const shortName = dataFromMoex.description.data.find(
+        (arr) => arr[0] === 'SHORTNAME',
+      )?.[2];
+      const boardData = dataFromMoex.boards.data.find((i) => i[4] === 1);
+      const engine = boardData?.[3];
+      const market = boardData?.[2];
+      const board = boardData?.[1];
+
+      if (
+        [name, shortName, boardData, board, market, engine].find(
+          (i) => i === undefined,
+        )
+      ) {
+        throw new ImATeapotException(
+          `[${DealService.name}]: Проблема с данными полученными в московской бирже`,
+        );
+      }
+
+      security = await this.moexRepository.create({
+        ticker,
+        name,
+        shortName,
+        engine,
+        market,
+        board,
+      });
     }
-    return;
-    // get security from securities table of the exchange by ticker
-    const securityId = 1;
-    return this.dealRepository.create({ ...dealData, securityId });
+
+    return this.dealRepository.create({ ...dealData, securityId: security.id });
   }
 }

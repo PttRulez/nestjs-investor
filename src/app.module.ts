@@ -20,13 +20,13 @@ const reflector = new Reflector();
     AuthModule,
     CashoutModule,
     ConfigModule.forRoot({ isGlobal: true }),
+    DealModule,
     DepositModule,
     HttpModule,
+    MoexModule,
     PortfolioModule,
     PrismaModule,
     UserModule,
-    DealModule,
-    MoexModule,
   ],
   providers: [
     {
